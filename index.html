@@ -8,13 +8,10 @@
   </head>
   <body>
     <h1>Facial Keypoint Detection with Neural Networks</h1>
+    <h2>Nose Tip Detection</h2>
     <p>
-        This project uses neural networks to detect key facial points.
-    </p>
-    
-    <h2>Part 1: Nose Tip Detection</h2>
-    <p>
-        First, I used a very small portion of the dataset to predict the nose tip only. 
+        First, I used a very small portion of the dataset to predict the nose tip only. The images 
+        were compressed to 60x80 pixels and greyscale.
     </p>
     <h3>
         Groundtruth Keypoints
@@ -32,235 +29,180 @@
             <img src="images/nosetip3.png" width=300>
         </div>
     </div>
-    <h2>Computing the Midway Face</h2>
+    <h2>Hyperparameters and Architecture</h2>
     <p>
-        In order to compute the midway face, I first computed the midway shape by 
-        averaging the points selected on my face and george's and then calculated
-        the Delaunay triangulation over the new points. I apply affine transformations
-        between my and george's Delaunay triangulations to the midway's and average the 
-        colors.
+        I used three convolutional layers, first one of size 5, last two of size 3. The 
+        number of output channels started from 1 (since the input was in greyscale) to 16,
+        then to 32, then to 64. Then, I had two fully connected layers, first one with output of 64,
+        second one with output of 2 since we wanted a single (x, y) point for the nose.
+        
+        The convolutional layers each had relu and maxpooling applied, whereas the first fully connected 
+        layer had relu applied. 
+
+        I used an Adam optimizer and tried an initial learning rate of 1e-2, 1e-3, and 1e-4, finding that 1e-3
+        was the best out of the three. I ran for 15 epochs. 
     </p>
+    <h3>
+        MSE Loss
+    </h3>
     <div class = 'container'>
         <div class='imgContainer'> 
-            <img src="images/aligned_george.png" width=300>
-        </div>
-
-        <div class='imgContainer'> 
-            <img src="images/aligned_me.png" width=300>
-        </div>
-
-        <div class='imgContainer'> 
-            <img src="images/midway_face.png" width=300>
-        </div>
-
-    </div>
-
-    <h2>The Morph Sequence</h2>
-    <p>
-        I simply applied what I did to compute the mean face except I adjusted the weight 
-        of the first and second image when averaging the points and colors. One thing I did 
-        change was the process of computation in terms of code, changing from iteration to 
-        array manipulation as it was faster. Previously, it took a minute or so for a single 
-        computation. Now, it was faster to compute 45 morphs than the single morph from before.
-        Through this, I am able to create a gif of george's face morphing into mine. 
-    </p>
-    <img src="images/morph_seq.gif" width=400>
-
-    <h2>The "Mean face" of a population</h2>
-    <p>
-        The FEI Face database had both smiling and neutral faces that already had points chosen.
-        Below is an example of one such pairing.
-    </p>
-        <div class = 'container'>
-            <div class='imgContainer'> 
-                <img src="images/fei1.png" width=400>
-            </div>
-
-            <div class='imgContainer'> 
-                <img src="images/fei2.png" width=400>
-            </div>
-        </div>
-    <p>
-        I computed the mean face by first computing its shape via an average of the given data points
-        I then morphed a few of the faces into the average shape.
-    </p>
-        <div class = 'container'>
-            <div class='imgContainer'>
-                <img src="images/avg1.png" width=300>
-            </div>
-
-            <div class='imgContainer'>
-                <img src="images/avg2.png" width=300>
-            </div>
-    
-            <div class='imgContainer'> 
-                <img src="images/avg3.png" width=300>
-            </div>
-        </div>
-        <div class = 'container'>
-            <div class='imgContainer'>
-                <img src="images/avg4.png" width=300>
-            </div>
-    
-            <div class='imgContainer'> 
-                <img src="images/avg5.png" width=300>
-            </div>
-        </div>
-    <p>
-        By morphing all the images to the average shape and averaging the colors, I was able to compute
-        the mean face of both neutral and smiling faces. 
-    </p>
-        <div class = 'container'>
-            <div class='imgContainer'>
-                <img src="images/fei1.png" width=300>
-            </div>
-
-            <div class='imgContainer'> 
-                <img src="images/fei2.png" width=300>
-            </div>
-        </div>
-    <p>
-        I warped my own face to the average shapes to get this ugly result.
-    </p>
-        <div class = 'container'>
-            <div class='imgContainer'>
-                <img src="images/me_to_mid_a.png" width=300>
-            </div>
-
-            <div class='imgContainer'> 
-                <img src="images/me_to_mid_b.png" width=300>
-            </div>
-        </div>
-
-    <p>
-        Similarly, I warped the average faces to my own face shape.
-    </p>
-    <div class = 'container'>
-        <div class='imgContainer'>
-            <img src="images/mid_to_me_a.png" width=300>
-        </div>
-
-        <div class='imgContainer'> 
-            <img src="images/mid_to_me_b.png" width=300>
+            <img src="images/noseloss.png" width=500>
         </div>
     </div>
-
-    <p>
-        I believe the warp was very distorted because my face shape is pretty different from the average shape.
-        This is especially apparent when it comes to the warps between smiling shapes and my shape. 
-        For instance, my lips are smaller than the average face, so when it got warped, it became much larger.
-        This was even more exacerbated by the smiling face, since the edges of the mouths are much bigger
-        for the smile. When the smiling average was warped to my face, the mouth becomes comically small 
-        for the same reason. 
-    </p>
-
+    <h3>
+        Sampled Outputs 
+    </h3>
     <div class = 'container'>
-        <div class='imgContainer'>
-            <img src="images/mid_shape.png" width=400>
-        </div>
-
         <div class='imgContainer'> 
-            <img src="images/me_shape.png" width=400>
+            <img src="images/noseout1.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/noseout2.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/noseout3.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/noseout4.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/noseout5.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/noseout6.png" width=300>
         </div>
     </div>
-
-    <h2>Caricatures: Extrapolating from the mean</h2>
-    <p>
-        I can artificially make my face smile by taking the difference between 
-        the smiling and neutral averages, then adding to my own face. This was 
-        done while in the average face shape so that they are added in the same space.
-    </p>
-
+    <h3>
+        Best and Worst Cases 
+    </h3>
     <div class = 'container'>
-        <div class='imgContainer'>
-            <img src="images/me_warped.png" width=300>
-        </div>
-
         <div class='imgContainer'> 
-            <img src="images/smile_dx.png" width=300>
+            <img src="images/bestnose1.png" width=300>
         </div>
-
         <div class='imgContainer'> 
-            <img src="images/artificial_warped_smile.png" width=300>
+            <img src="images/bestnose2.png" width=300>
         </div>
     </div>
-
-    <p>
-        Experimentally, I warped this result back to my own face shape. I also tried first
-        warping the delta between the smiling and neutral face first, then adding to my own face.
-        Both yielded the same result.
-    </p>
-
     <div class = 'container'>
-        <div class='imgContainer'>
-            <h3> warped dx </h3>
-            <img src="images/warped_dx.png" width=300>
-        </div>
-
         <div class='imgContainer'> 
-            <h3> warped back </h3>
-            <img src="images/artificial_smile.png" width=300>
+            <img src="images/worstnose1.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/worstnose2.png" width=300>
         </div>
     </div>
-
-    <h2> Gender Swap </h2>
-
     <p>
-        Using the same technique, I tried to create a more feminized version of 
-        me and a male version of me. To get better results, I used the average 
-        chinese male and female face in order to not run into the problem I had 
-        with the brazilian dataset, that my face was too different.
+        These images were picked based off of highest and lowest MSE loss.
+        I believe the reason why it fails in the third picture might be because the mustache confused the network, 
+        and the reason why it fails in the fourth picture is because her angle is a bit unusual, compared to the other straight forward faces, like the photo that performs the best.
     </p>
 
+
+    <h2>Full Facial Keypoints Detection</h2>
     <p>
-        First, I computed the average shape using points I selected on the average 
-        chinese male and female faces. Then, I warped all the faces to that middle shape.
+        Next, I repeat the process with the same training and validation data, this time with all the facial keypoints.
     </p>
 
+    <h3>
+        Groundtruth Keypoints
+    </h3>
     <div class = 'container'>
-        <h3> original </h3>
-        <div class='imgContainer'>
-            <img src="images/chineseaveragewoman.jpg" width=300>
+        <div class='imgContainer'> 
+            <img src="images/fface1.png" width=300>
         </div>
 
         <div class='imgContainer'> 
-            <img src="images/chineseaverageman.jpg" width=300>
+            <img src="images/fface2.png" width=300>
         </div>
 
         <div class='imgContainer'> 
-            <img src="images/blackened_me.jpg" width=300>
+            <img src="images/fface3.png" width=300>
         </div>
     </div>
+    <h2>Hyperparameters and Architecture</h2>
+    <p>
+        I used five convolutional layers, first one of size 5, the rest of size 3. The 
+        number of output channels started from 1 again to 16, and continuously doubled. 
+        Then, I had two fully connected layers, first one with output of 256 this time,
+        since there were more convolutional layers and following the powers of two, and
+        second one with output of 58 * 2 since we wanted a single 58 points this time.
+        
+        Again, the convolutional layers each had relu and maxpooling applied, whereas the 
+        first fully connected layer had relu applied. 
 
+        Again I used an Adam optimizer and tried an initial learning rate of 1e-2, 1e-3, and 1e-4, 
+        finding that 1e-3 was the best out of the three. I ran for 20 epochs this time since there 
+        were more points, though I could've ran for longer. 
+    </p>
+    <h3>
+        MSE Loss
+    </h3>
     <div class = 'container'>
-        <h3> average shape </h3>
-        <div class='imgContainer'>
-            <img src="images/aligned_female.jpg" width=300>
-        </div>
-
         <div class='imgContainer'> 
-            <img src="images/aligned_male.jpg" width=300>
+            <img src="images/ffaceloss.png" width=500>
         </div>
-
+    </div>
+    <h3>
+        Sampled Outputs 
+    </h3>
+    <div class = 'container'>
         <div class='imgContainer'> 
-            <img src="images/aligned_gender_me.jpg" width=300>
+            <img src="images/ffaceout1.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/ffaceout2.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/ffaceout3.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/ffaceout4.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/ffaceout5.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/ffaceout6.png" width=300>
+        </div>
+    </div>
+    <h3>
+        Best and Worst Cases 
+    </h3>
+    <div class = 'container'>
+        <div class='imgContainer'> 
+            <img src="images/bestfface1.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/bestfface2.png" width=300>
+        </div>
+    </div>
+    <div class = 'container'>
+        <div class='imgContainer'> 
+            <img src="images/worstfface1.png" width=300>
+        </div>
+        <div class='imgContainer'> 
+            <img src="images/worstfface2.png" width=300>
         </div>
     </div>
 
     <p>
-        Interestingly, the average male and female's faces did not change too much, 
-        whereas mine already looks a little more male. I do the same thing as I did 
-        for the previous caricature, which is adding the dx of male to female to myself
-        in the same face shape. Then I warp it to the male face shape.
+        Very interestingly, the second best face was also the second worst face for nose detection.
+        I suspect the reason for the failures might have been how the person is looking more downwards
+        rather than straight forwards. It seems the model did well on face that were looking straight 
+        on or to the side. As a reference, one of the samples shown above corresponds to the worst case 
+        for nose detection, which also did not do very well.
     </p>
 
+    <h3>
+        Learned Filters 
+    </h3>
+    <p>
+        These were the learned filters of the first layer. 
+    </p>
     <div class = 'container'>
         <div class='imgContainer'>
-            <img src="images/warped_male_me.png" width=300>
-        </div>
-
-        <div class='imgContainer'> 
-            <img src="images/male_me.png" width=300>
+            <img src="images/filters.png" width=800>
         </div>
     </div>
 
