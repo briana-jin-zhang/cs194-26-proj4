@@ -2,33 +2,34 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Face Morphing</title>
+    <title>Facial Keypoint Detection with Neural Networks</title>
     <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet">
     <link href="styles/style.css" rel="stylesheet" type="text/css">
   </head>
   <body>
-    <h1>Face Morphing</h1>
+    <h1>Facial Keypoint Detection with Neural Networks</h1>
     <p>
-        This project involved me morphing my face with a man named george. By doing this a sufficiently
-        number of times, I was able to create a gif of a gradual morph. Later, I compute the mean neutral 
-        and mean smiling face from the FEI face database. From those means, I extrapolate a caricature of 
-        myself smiling. At the very end, I did miscellaneous things such as remorphing the caricature, 
-        changing the gender of my face, and computing the PCA of the neutral faces.
+        This project uses neural networks to detect key facial points.
     </p>
     
-    <h2>Defining Correspondences</h2>
+    <h2>Part 1: Nose Tip Detection</h2>
     <p>
-        First, I had to pick the points that would define the features of the human face.
-        I also aligned the images so that the eyes would be roughly in the same position.
-        Experimentally, I displayed what the Delaunay triangulation over the faces would appear.
+        First, I used a very small portion of the dataset to predict the nose tip only. 
     </p>
+    <h3>
+        Groundtruth Keypoints
+    </h3>
     <div class = 'container'>
         <div class='imgContainer'> 
-            <img src="images/delaunay_george.png" width=400>
+            <img src="images/nosetip1.png" width=300>
         </div>
 
         <div class='imgContainer'> 
-            <img src="images/delaunay_me.png" width=400>
+            <img src="images/nosetip2.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/nosetip3.png" width=300>
         </div>
     </div>
     <h2>Computing the Midway Face</h2>
