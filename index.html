@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Face Morphing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet">
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <h1>Face Morphing</h1>
+    <p>
+        This project involved me morphing my face with a man named george. By doing this a sufficiently
+        number of times, I was able to create a gif of a gradual morph. Later, I compute the mean neutral 
+        and mean smiling face from the FEI face database. From those means, I extrapolate a caricature of 
+        myself smiling. At the very end, I did miscellaneous things such as remorphing the caricature, 
+        changing the gender of my face, and computing the PCA of the neutral faces.
+    </p>
+    
+    <h2>Defining Correspondences</h2>
+    <p>
+        First, I had to pick the points that would define the features of the human face.
+        I also aligned the images so that the eyes would be roughly in the same position.
+        Experimentally, I displayed what the Delaunay triangulation over the faces would appear.
+    </p>
+    <div class = 'container'>
+        <div class='imgContainer'> 
+            <img src="images/delaunay_george.png" width=400>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/delaunay_me.png" width=400>
+        </div>
+    </div>
+    <h2>Computing the Midway Face</h2>
+    <p>
+        In order to compute the midway face, I first computed the midway shape by 
+        averaging the points selected on my face and george's and then calculated
+        the Delaunay triangulation over the new points. I apply affine transformations
+        between my and george's Delaunay triangulations to the midway's and average the 
+        colors.
+    </p>
+    <div class = 'container'>
+        <div class='imgContainer'> 
+            <img src="images/aligned_george.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/aligned_me.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/midway_face.png" width=300>
+        </div>
+
+    </div>
+
+    <h2>The Morph Sequence</h2>
+    <p>
+        I simply applied what I did to compute the mean face except I adjusted the weight 
+        of the first and second image when averaging the points and colors. One thing I did 
+        change was the process of computation in terms of code, changing from iteration to 
+        array manipulation as it was faster. Previously, it took a minute or so for a single 
+        computation. Now, it was faster to compute 45 morphs than the single morph from before.
+        Through this, I am able to create a gif of george's face morphing into mine. 
+    </p>
+    <img src="images/morph_seq.gif" width=400>
+
+    <h2>The "Mean face" of a population</h2>
+    <p>
+        The FEI Face database had both smiling and neutral faces that already had points chosen.
+        Below is an example of one such pairing.
+    </p>
+        <div class = 'container'>
+            <div class='imgContainer'> 
+                <img src="images/fei1.png" width=400>
+            </div>
+
+            <div class='imgContainer'> 
+                <img src="images/fei2.png" width=400>
+            </div>
+        </div>
+    <p>
+        I computed the mean face by first computing its shape via an average of the given data points
+        I then morphed a few of the faces into the average shape.
+    </p>
+        <div class = 'container'>
+            <div class='imgContainer'>
+                <img src="images/avg1.png" width=300>
+            </div>
+
+            <div class='imgContainer'>
+                <img src="images/avg2.png" width=300>
+            </div>
+    
+            <div class='imgContainer'> 
+                <img src="images/avg3.png" width=300>
+            </div>
+        </div>
+        <div class = 'container'>
+            <div class='imgContainer'>
+                <img src="images/avg4.png" width=300>
+            </div>
+    
+            <div class='imgContainer'> 
+                <img src="images/avg5.png" width=300>
+            </div>
+        </div>
+    <p>
+        By morphing all the images to the average shape and averaging the colors, I was able to compute
+        the mean face of both neutral and smiling faces. 
+    </p>
+        <div class = 'container'>
+            <div class='imgContainer'>
+                <img src="images/fei1.png" width=300>
+            </div>
+
+            <div class='imgContainer'> 
+                <img src="images/fei2.png" width=300>
+            </div>
+        </div>
+    <p>
+        I warped my own face to the average shapes to get this ugly result.
+    </p>
+        <div class = 'container'>
+            <div class='imgContainer'>
+                <img src="images/me_to_mid_a.png" width=300>
+            </div>
+
+            <div class='imgContainer'> 
+                <img src="images/me_to_mid_b.png" width=300>
+            </div>
+        </div>
+
+    <p>
+        Similarly, I warped the average faces to my own face shape.
+    </p>
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/mid_to_me_a.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/mid_to_me_b.png" width=300>
+        </div>
+    </div>
+
+    <p>
+        I believe the warp was very distorted because my face shape is pretty different from the average shape.
+        This is especially apparent when it comes to the warps between smiling shapes and my shape. 
+        For instance, my lips are smaller than the average face, so when it got warped, it became much larger.
+        This was even more exacerbated by the smiling face, since the edges of the mouths are much bigger
+        for the smile. When the smiling average was warped to my face, the mouth becomes comically small 
+        for the same reason. 
+    </p>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/mid_shape.png" width=400>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/me_shape.png" width=400>
+        </div>
+    </div>
+
+    <h2>Caricatures: Extrapolating from the mean</h2>
+    <p>
+        I can artificially make my face smile by taking the difference between 
+        the smiling and neutral averages, then adding to my own face. This was 
+        done while in the average face shape so that they are added in the same space.
+    </p>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/me_warped.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/smile_dx.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/artificial_warped_smile.png" width=300>
+        </div>
+    </div>
+
+    <p>
+        Experimentally, I warped this result back to my own face shape. I also tried first
+        warping the delta between the smiling and neutral face first, then adding to my own face.
+        Both yielded the same result.
+    </p>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <h3> warped dx </h3>
+            <img src="images/warped_dx.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <h3> warped back </h3>
+            <img src="images/artificial_smile.png" width=300>
+        </div>
+    </div>
+
+    <h2> Gender Swap </h2>
+
+    <p>
+        Using the same technique, I tried to create a more feminized version of 
+        me and a male version of me. To get better results, I used the average 
+        chinese male and female face in order to not run into the problem I had 
+        with the brazilian dataset, that my face was too different.
+    </p>
+
+    <p>
+        First, I computed the average shape using points I selected on the average 
+        chinese male and female faces. Then, I warped all the faces to that middle shape.
+    </p>
+
+    <div class = 'container'>
+        <h3> original </h3>
+        <div class='imgContainer'>
+            <img src="images/chineseaveragewoman.jpg" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/chineseaverageman.jpg" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/blackened_me.jpg" width=300>
+        </div>
+    </div>
+
+    <div class = 'container'>
+        <h3> average shape </h3>
+        <div class='imgContainer'>
+            <img src="images/aligned_female.jpg" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/aligned_male.jpg" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/aligned_gender_me.jpg" width=300>
+        </div>
+    </div>
+
+    <p>
+        Interestingly, the average male and female's faces did not change too much, 
+        whereas mine already looks a little more male. I do the same thing as I did 
+        for the previous caricature, which is adding the dx of male to female to myself
+        in the same face shape. Then I warp it to the male face shape.
+    </p>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/warped_male_me.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/male_me.png" width=300>
+        </div>
+    </div>
+
+    <p>
+        I was rather pleased with the result. 
+        I repeat the same process to create a more feminine me. 
+        This time I am less successful.
+    </p>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/warped_feminine_me.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/feminine_me.png" width=300>
+        </div>
+    </div>
+
+    <p>
+        I believe the reason why it did not feminize me more is because my face 
+        is already fairly similar to the average female face. The only noticeable
+        difference is that my eyes are slightly bigger now, but my face is 
+        also wider.
+    </p>
+
+    <h2>PCA</h2>
+    <p>
+        Something else I decided to try was to make an eigenbasis for faces 
+        based off of the FEI neutral faces. I simply did an SVD decomposition. 
+        Here are the first few eigenfaces.
+    </p>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/eface1.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/eface2.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/eface3.png" width=300>
+        </div>
+    </div>
+
+    <p>
+        Lastly, one thing I did was collaborate with other students to create a 
+        <a href="https://www.youtube.com/watch?v=O3vouduLS3w&feature=emb_title">video</a> 
+        of our faces all morphing into each others. This was my contribution.
+    </p>
+
+    <img src="images/new_morph_seq.gif" width=400>
+
+  </body>
+</html>
