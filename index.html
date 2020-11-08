@@ -102,6 +102,7 @@
     <h2>Full Facial Keypoints Detection</h2>
     <p>
         Next, I repeat the process with the same training and validation data, this time with all the facial keypoints.
+        The data was augmented with random rotations and crops. 
     </p>
 
     <h3>
@@ -198,7 +199,8 @@
         Learned Filters 
     </h3>
     <p>
-        These were the learned filters of the first layer. 
+        These were the learned filters of the first layer. In some of them, you can see a sense of a 
+        round shape edge being learned.
     </p>
     <div class = 'container'>
         <div class='imgContainer'>
@@ -206,57 +208,264 @@
         </div>
     </div>
 
+    <h2>
+        Train With Larger Dataset
+    </h2>
+
     <p>
-        I was rather pleased with the result. 
-        I repeat the same process to create a more feminine me. 
-        This time I am less successful.
+        The process was repeated with a much larger dataset (6666 images instead of 240).
+        This data had bounding boxes so it did not make sense to crop. Instead, I just 
+        augmented the data with rotations.
+    </p>
+
+    <h2>Hyperparameters and Architecture</h2>
+
+    <p>
+        I used a resnet18 model, changing the first conv net with 1 input channel instead 
+        of three since it was grayscale, and the last channel to have output of 68*2 since 
+        there are now 68 labeled points. I tried a few hyperparameters, running for 80 epochs.
+        I found the best was having a batch size of 32 and learning rate of 1e-2. I tried a few 
+        times experimentally at the beginning before graphs with 1e-2 and larger batch sizes,
+        but did not do much better than 0.0003.
+    </p>
+
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 32</li>
+                <li>learning rate: 1e-2</li>
+                <li>min validation error: 0.00029225</li>
+                <li>min validation error epoch: 76</li>
+            </ul>
+            <img src="images/32_2.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 32</li>
+                <li>learning rate: 1e-4</li>
+                <li>min validation error: 0.000415</li>
+                <li>min validation error epoch: 75</li>
+            </ul>
+            <img src="images/32_4.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 32</li>
+                <li>learning rate: 1e-5</li>
+                <li>min validation error: 0.0033</li>
+                <li>min validation error epoch: 80</li>
+            </ul>
+            <img src="images/32_5.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 64</li>
+                <li>learning rate: 1e-2</li>
+                <li>min validation error: 0.00032</li>
+                <li>min validation error epoch: 73</li>
+            </ul>
+            <img src="images/64_2.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 64</li>
+                <li>learning rate: 1e-4</li>
+                <li>min validation error: 0.0005775</li>
+                <li>min validation error epoch: 73</li>
+            </ul>
+            <img src="images/64_5.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 64</li>
+                <li>learning rate: 1e-5</li>
+                <li>min validation error: 0.007</li>
+                <li>min validation error epoch: 80</li>
+            </ul>
+            <img src="images/64_5.png" width=300>
+        </div>
+    </div>
+
+    <h2>Test Set Predictions</h2>
+
+    <p>
+        Initially, my models with learning rates of 1e-3 seemed to generate 
+        hearts despite the low error of around 0.0003. 
     </p>
 
     <div class = 'container'>
         <div class='imgContainer'>
-            <img src="images/warped_feminine_me.png" width=300>
+            <img src="images/hearts1.png" width=300>
         </div>
 
         <div class='imgContainer'> 
-            <img src="images/feminine_me.png" width=300>
+            <img src="images/hearts2.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/hearts3.png" width=300>
         </div>
     </div>
 
     <p>
-        I believe the reason why it did not feminize me more is because my face 
-        is already fairly similar to the average female face. The only noticeable
-        difference is that my eyes are slightly bigger now, but my face is 
-        also wider.
-    </p>
-
-    <h2>PCA</h2>
-    <p>
-        Something else I decided to try was to make an eigenbasis for faces 
-        based off of the FEI neutral faces. I simply did an SVD decomposition. 
-        Here are the first few eigenfaces.
+        With hyperparameters of learning rate being 1e-2 and batch size of 32, 
+        these were my initial good results for the beginning of the test set. 
     </p>
 
     <div class = 'container'>
         <div class='imgContainer'>
-            <img src="images/eface1.png" width=300>
+            <img src="images/test1.png" width=300>
         </div>
 
         <div class='imgContainer'> 
-            <img src="images/eface2.png" width=300>
+            <img src="images/test2.png" width=300>
         </div>
 
         <div class='imgContainer'>
-            <img src="images/eface3.png" width=300>
+            <img src="images/test3.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/test4.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/test5.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/test6.png" width=300>
+        </div>
+    </div>
+
+    <h2>Anti-aliased max pool</h2>
+
+    <p>
+        I repeated this with an anti-aliased resnet18 instead of a normal resnet18.
+        As can be seen in the graphs below, there was improvement, but not by much.
+    </p>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 32</li>
+                <li>learning rate: 1e-2</li>
+                <li>min validation error: 0.0002574</li>
+                <li>min validation error epoch: 76</li>
+            </ul>
+            <img src="images/anti2.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 32</li>
+                <li>learning rate: 1e-3</li>
+                <li>min validation error: 0.000267</li>
+                <li>min validation error epoch: 73</li>
+            </ul>
+            <img src="images/anti3.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <ul> 
+                <li>batch size: 32</li>
+                <li>learning rate: 1e-4</li>
+                <li>min validation error: 0.0003755</li>
+                <li>min validation error epoch: 78</li>
+            </ul>
+            <img src="images/anti4.png" width=300>
+        </div>
+    </div>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/antitest1.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/antitest2.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/antitest3.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/antitest4.png" width=300>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/antitest5.png" width=300>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/antitest6.png" width=300>
+        </div>
+    </div>
+
+    <h2>Tests outside of Test Set</h2>
+
+    <p>I tried the model on my own personal photos, but the vast majority failed.</p>
+
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/out1.png" width=200>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/out2.png" width=200>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/out3.png" width=200>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/out4.png" width=200>
         </div>
     </div>
 
     <p>
-        Lastly, one thing I did was collaborate with other students to create a 
-        <a href="https://www.youtube.com/watch?v=O3vouduLS3w&feature=emb_title">video</a> 
-        of our faces all morphing into each others. This was my contribution.
+        I tested on more photos of myself not shown, and I realized the model kept 
+        identifying my eyebrows as eyes, my nose as a mouth, hair for eyebrows, 
+        and mouth line as bottom of chin. This was the same for my sister and dad. 
+        I then tried the model on the FEI database, thinking perhaps the model 
+        possibly did not identify asians well.
     </p>
 
-    <img src="images/new_morph_seq.gif" width=400>
+    <div class = 'container'>
+        <div class='imgContainer'>
+            <img src="images/fei1.png" width=200>
+        </div>
+
+        <div class='imgContainer'> 
+            <img src="images/fei2.png" width=200>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/fei3.png" width=200>
+        </div>
+
+        <div class='imgContainer'>
+            <img src="images/fei4.png" width=200>
+        </div>
+    </div>
+
+    <h3>Automatic Morphing</h3>
+
+    <p>
+        Lastly, since it was able to decently predict the keypoints of the FEI database,
+        I used those keypoints to morph together multiple faces automatically by 
+        incorporating my previous project.
+    </p>
+
+    <img src="images/morph.gif" width=400>
 
   </body>
 </html>
